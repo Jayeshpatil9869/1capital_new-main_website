@@ -1,0 +1,17 @@
+[Unit]
+Description=Gunicorn daemon for One Capital Sales Dashboard
+After=network.target
+
+[Service]
+User=root
+Group=www-data
+WorkingDirectory=/root/SalesDashboard/SalesDashboard
+ExecStart=/root/SalesDashboard/SalesDashboard/venv/bin/gunicorn \
+          --access-logfile /root/SalesDashboard/SalesDashboard/logs/gunicorn-access.log \
+          --error-logfile /root/SalesDashboard/SalesDashboard/logs/gunicorn-error.log \
+          --workers 3 \
+          --bind 127.0.0.1:8000 \
+          SalesDashboard.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
