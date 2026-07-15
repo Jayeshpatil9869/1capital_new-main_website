@@ -1,0 +1,622 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="description" content="Mutual Funds - 1capital.in | Premier Equity Advisory & Wealth Management">
+    <meta name="theme-color" content="#2563eb">
+    <title>Mutual Funds | 1capital.in | Premier Equity Advisory & Wealth Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #eff6ff;
+            --secondary: #0f172a;
+            --text-body: #475569;
+            --text-light: #94a3b8;
+            --white: #ffffff;
+            --border: #e2e8f0;
+            --success: #4ade80;
+            --warning: #facc15;
+            --info: #60a5fa;
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+            --container-width: 1280px;
+            --nav-height: 80px;
+            --ticker-height: 44px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-main);
+            background-color: #f8fafc;
+            color: var(--secondary);
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+        }
+
+        ul { list-style: none; }
+        img, canvas { max-width: 100%; display: block; }
+
+        .container {
+            max-width: var(--container-width);
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .section { padding: 6rem 0; }
+
+        @media (max-width: 640px) {
+            .section { padding: 3rem 0; }
+        }
+
+        h1, h2, h3 { line-height: 1.2; }
+        h1 { font-size: 2.25rem; }
+        h2 { font-size: 1.875rem; }
+        h3 { font-size: 1.5rem; }
+
+        @media (max-width: 640px) {
+            h1 { font-size: 1.75rem; }
+            h2 { font-size: 1.5rem; }
+            h3 { font-size: 1.25rem; }
+        }
+
+        .text-center { text-align: center; }
+        .text-muted { color: var(--text-body); }
+        .text-gradient {
+            background: linear-gradient(90deg, #000, var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        @media (max-width: 640px) {
+            .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+        }
+
+        @media (min-width: 641px) and (max-width: 1024px) {
+            .grid-2 { grid-template-columns: repeat(2, 1fr); }
+            .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (min-width: 1025px) {
+            .grid-2 { grid-template-columns: repeat(2, 1fr); }
+            .grid-3 { grid-template-columns: repeat(3, 1fr); }
+            .grid-4 { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.875rem;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--secondary);
+            color: var(--white);
+        }
+        .btn-primary:hover { background-color: var(--primary); }
+
+        .btn-blue {
+            background-color: var(--primary);
+            color: var(--white);
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+        }
+        .btn-blue:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 20px -3px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-outline {
+            background-color: var(--white);
+            border-color: var(--border);
+            color: var(--secondary);
+        }
+        .btn-outline:hover { background-color: var(--primary-light); }
+
+        .ticker-wrap {
+            background-color: #000;
+            color: #fff;
+            padding: 0.6rem 0;
+            overflow: hidden;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .ticker-move {
+            display: flex;
+            width: max-content;
+            animation: ticker-scroll 30s linear infinite;
+        }
+
+        .ticker-item {
+            padding: 0 2rem;
+            font-weight: 700;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .val-up { color: #4ade80; font-weight: 700; }
+        .val-down { color: #ef4444; font-weight: 700; }
+
+        @keyframes ticker-scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: var(--ticker-height);
+            z-index: 90;
+            height: var(--nav-height);
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+            color: var(--secondary);
+        }
+
+        .logo span { color: var(--primary); }
+
+        .nav-links {
+            display: flex;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .nav-links a {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-left: 2rem;
+            color: var(--text-body);
+        }
+        .nav-links a:hover { color: var(--primary); }
+
+        .nav-auth {
+            display: flex;
+            gap: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+        }
+
+        .hero-banner {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .hero-banner h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 900;
+        }
+
+        .hero-banner p {
+            font-size: 1.125rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            color: var(--secondary);
+        }
+
+        .bg-white { background-color: var(--white); }
+        .bg-light { background-color: #f8fafc; }
+
+        .info-card {
+            background: var(--white);
+            padding: 2.5rem;
+            border-radius: 1rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .info-card h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .info-card p {
+            color: var(--text-body);
+            line-height: 1.8;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 1.5rem 0;
+        }
+
+        .feature-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 0.75rem;
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .feature-list li:hover {
+            background: var(--primary-light);
+            transform: translateX(5px);
+        }
+
+        .feature-list li:before {
+            content: "[OK]";
+            color: var(--success);
+            font-weight: 900;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .feature-list li span {
+            color: var(--text-body);
+            line-height: 1.6;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .cta-section h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            font-weight: 900;
+        }
+
+        .cta-section p {
+            font-size: 1.125rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: var(--primary-dark);
+            gap: 1rem;
+        }
+
+        .footer {
+            background-color: var(--secondary);
+            color: var(--white);
+            padding-top: 5rem;
+            padding-bottom: 3rem;
+            font-size: 0.875rem;
+        }
+
+        .footer-links li { margin-bottom: 0.75rem; }
+        .footer-links a { color: var(--text-light); }
+        .footer-links a:hover { color: var(--white); }
+
+        .social-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.5rem;
+            transition: 0.3s;
+        }
+
+        .social-icon:hover { background: var(--primary); }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="ticker-wrap">
+    <div class="ticker-move">
+        <div class="ticker-item">SENSEX: <span class="val-down">83,627.69 (-0.30%)</span></div>
+        <div class="ticker-item">NIFTY 50: <span class="val-down">25,732.30 (-0.22%)</span></div>
+        <div class="ticker-item">GOLD: <span class="val-up">INR1,50,371 (+0.48%)</span></div>
+        <div class="ticker-item">SILVER: <span class="val-up">INR2,880 (+0.35%)</span></div>
+        <div class="ticker-item">1CAPITAL.IN: <span class="val-up">Alpha Strategy (+2.1%)</span></div>
+    </div>
+</div>
+
+<nav class="navbar">
+    <div class="container">
+        <div class="logo">
+            <i class="fas fa-chart-line"></i> One<span>Capital</span>
+        </div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/about-us/">About Us</a>
+            <a href="/#services">Services</a>
+            <a href="/pms-aif/">PMS & AIF</a>
+            <a href="/#contact">Contact</a>
+        </div>
+        <div class="nav-auth">
+            {% if user.is_authenticated %}
+            <a href="{% url 'dashboard' %}" class="btn btn-blue">Dashboard</a>
+            <a href="{% url 'logout' %}" class="btn btn-outline">Logout</a>
+            {% else %}
+            <a href="/accounts/login/" class="btn btn-blue">Login</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+<section class="hero-banner">
+    <div class="container">
+        <h1>Mutual Funds</h1>
+        <p>Build wealth systematically with professionally managed investment portfolios across equity, debt, and hybrid categories.</p>
+    </div>
+</section>
+
+<section class="section bg-light">
+    <div class="container">
+        <a href="/" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Home
+        </a>
+    </div>
+</section>
+
+<section class="section bg-white">
+    <div class="container">
+        <div class="grid grid-2">
+            <div>
+                <h2 class="section-title">What are <span class="text-gradient">Mutual Funds?</span></h2>
+                <p class="text-muted" style="font-size: 1.125rem; line-height: 1.8; margin-bottom: 2rem;">
+                    Mutual Funds pool money from multiple investors and invest it in a diversified portfolio of stocks, bonds, or other securities. They are managed by professional fund managers, offering an easy way to invest in financial markets without needing large capital or expertise.
+                </p>
+            </div>
+
+            <div>
+                <div class="info-card">
+                    <h3><i class="fas fa-chart-pie" style="margin-right: 0.75rem;"></i>Investment Categories</h3>
+                    <ul class="feature-list">
+                        <li><span><strong>Equity Funds:</strong> Focused on stock market investments for growth potential</span></li>
+                        <li><span><strong>Debt Funds:</strong> Primarily invested in bonds and fixed-income securities</span></li>
+                        <li><span><strong>Hybrid Funds:</strong> Balanced blend of equity and debt for moderate growth</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 3rem;">
+            <h3 style="color: var(--primary); font-size: 1.5rem; margin-bottom: 1.5rem;">Advantages of Mutual Funds</h3>
+            <ul class="feature-list">
+                <li><span><strong>Professional Management:</strong> Managed by experienced experts</span></li>
+                <li><span><strong>Diversification:</strong> Spread risk across multiple assets</span></li>
+                <li><span><strong>Affordable Investing:</strong> Start with small SIP amounts</span></li>
+                <li><span><strong>Liquidity:</strong> Easy buy and redemption options</span></li>
+                <li><span><strong>Transparency:</strong> Regular updates and disclosures</span></li>
+                <li><span><strong>Tax Benefits:</strong> ELSS funds help save tax</span></li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section class="section bg-light">
+    <div class="container">
+        <h2 class="section-title text-center" style="margin-bottom: 3rem;">Why Choose <span class="text-gradient">1Capital</span> for Mutual Funds?</h2>
+
+        <div class="grid grid-2" style="margin-bottom: 2rem;">
+            <div class="info-card">
+                <h3><i class="fas fa-ban" style="margin-right: 0.75rem; color: #ef4444;"></i>No "Top Performers" Gimmicks</h3>
+                <p>Carefully curated mutual funds based on forward-looking market analysis, not just past performance.</p>
+            </div>
+
+            <div class="info-card">
+                <h3><i class="fas fa-compass" style="margin-right: 0.75rem; color: var(--primary);"></i>Market Scenario & Sector Outlook</h3>
+                <p>Direct plans with zero commission and personalized advice based on market conditions.</p>
+            </div>
+
+            <div class="info-card">
+                <h3><i class="fas fa-percent" style="margin-right: 0.75rem; color: var(--success);"></i>Interest Rate & Inflation Analysis</h3>
+                <p>We monitor macroeconomic indicators like interest rates and inflation to make informed decisions about asset allocation.</p>
+            </div>
+
+            <div class="info-card">
+                <h3><i class="fas fa-chart-line" style="margin-right: 0.75rem; color: var(--success);"></i>Evidence-Based Strategy</h3>
+                <p>Research-driven recommendations backed by thorough market analysis and historical data.</p>
+            </div>
+
+            <div class="info-card">
+                <h3><i class="fas fa-user-tie" style="margin-right: 0.75rem; color: var(--info);"></i>Fund Manager Strategy</h3>
+                <p>Expert insights into fund manager philosophy and performance consistency over varying market cycles.</p>
+            </div>
+
+            <div class="info-card">
+                <h3><i class="fas fa-shield-alt" style="margin-right: 0.75rem; color: var(--info);"></i>Enterprise-Grade Security</h3>
+                <p>Secure and compliant platform with 100% digital, paperless process for your convenience.</p>
+            </div>
+        </div>
+
+        <div style="margin-top: 3rem;">
+            <h3 style="color: var(--primary); font-size: 1.5rem; margin-bottom: 1.5rem;">Our Approach to Fund Selection</h3>
+            <ul class="feature-list">
+                <li><span><strong>Forward-Looking Strategy:</strong> We construct portfolios based on future market prospects, not backward-looking performance</span></li>
+                <li><span><strong>Strategic Rebalancing:</strong> We adjust allocations as macro conditions shift to maintain optimal portfolio balance</span></li>
+                <li><span><strong>Goal-Based Planning:</strong> Customized strategies for SIPs, lump sum investments, and tactical entries</span></li>
+                <li><span><strong>Continuous Monitoring:</strong> Regular review and optimization of fund selections based on performance</span></li>
+                <li><span><strong>Risk Management:</strong> Careful consideration of risk-adjusted returns across all strategies</span></li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section class="section bg-white">
+    <div class="container">
+        <h2 class="section-title text-center" style="margin-bottom: 3rem;">Investment Options</h2>
+
+        <div class="grid grid-3">
+            <div class="info-card">
+                <h3 style="font-size: 1.5rem; text-align: center; margin-bottom: 1.5rem;">
+                    <i class="fas fa-landmark" style="margin-right: 0.5rem; color: var(--primary);"></i>
+                    SIP
+                </h3>
+                <p><strong>Systematic Investment Plans</strong></p>
+                <p style="margin-top: 1rem; color: var(--text-body);">Invest a fixed amount regularly to build wealth systematically and benefit from rupee cost averaging.</p>
+            </div>
+
+            <div class="info-card">
+                <h3 style="font-size: 1.5rem; text-align: center; margin-bottom: 1.5rem;">
+                    <i class="fas fa-money-bill-wave" style="margin-right: 0.5rem; color: var(--success);"></i>
+                    Lump Sum
+                </h3>
+                <p><strong>One-Time Investment</strong></p>
+                <p style="margin-top: 1rem; color: var(--text-body);">Invest a larger amount at once, ideal for windfall gains or when you have available capital.</p>
+            </div>
+
+            <div class="info-card">
+                <h3 style="font-size: 1.5rem; text-align: center; margin-bottom: 1.5rem;">
+                    <i class="fas fa-bolt" style="margin-right: 0.5rem; color: var(--warning);"></i>
+                    Tactical Entries
+                </h3>
+                <p><strong>Strategic Timing</strong></p>
+                <p style="margin-top: 1rem; color: var(--text-body);">Capitalize on market opportunities with well-timed investments based on market analysis.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="cta-section">
+    <div class="container">
+        <h2>Ready to Start Your Mutual Fund Journey?</h2>
+        <p>Let our expert advisors help you build a customized mutual fund portfolio aligned with your financial goals.</p>
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            {% if user.is_authenticated %}
+            <a href="{% url 'dashboard' %}" class="btn btn-outline">Go to Dashboard</a>
+            {% else %}
+            <a href="/accounts/login/" class="btn btn-outline">Login</a>
+            {% endif %}
+            <a href="/#contact" class="btn btn-primary">Contact Us</a>
+        </div>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="container">
+        <div class="grid grid-4" style="border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 4rem;">
+            <div>
+                <h4 style="margin-bottom: 1.5rem; font-weight: 700;">About 1capital.in</h4>
+                <ul class="footer-links">
+                    <li><a href="/about-us/">About Us</a></li>
+                    <li><a href="/#services">Our Services</a></li>
+                    <li><a href="/mutual-funds/">Mutual Funds</a></li>
+                    <li><a href="/#contact">Contact Us</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 style="margin-bottom: 1.5rem; font-weight: 700;">Services</h4>
+                <ul class="footer-links">
+                    <li><a href="/pms-aif/">Portfolio Management Services</a></li>
+                    <li><a href="/mutual-funds/">Mutual Funds</a></li>
+                    <li><a href="/#services">All Services</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 style="margin-bottom: 1.5rem; font-weight: 700;">Legal</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms & Conditions</a></li>
+                    <li><a href="#">Disclaimer</a></li>
+                    <li><a href="#">SEBI Registration</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 style="margin-bottom: 1.5rem; font-weight: 700;">Quick Links</h4>
+                <ul class="footer-links">
+                    <li><a href="/dashboard/" target="_blank">Business Dashboard</a></li>
+                    <li><a href="/about-us/">About Our Team</a></li>
+                    <li><a href="/#contact">Contact Us</a></li>
+                    <li><a href="#">Support</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 1capital.in. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    lucide.createIcons();
+</script>
+
+</body>
+</html>

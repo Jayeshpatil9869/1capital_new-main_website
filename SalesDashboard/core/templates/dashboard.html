@@ -1,0 +1,741 @@
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - Sales Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* =========================================
+           CSS VARIABLES (THEME)
+           ========================================= */
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #eff6ff;
+            --secondary: #0f172a;
+            --text-body: #475569;
+            --text-light: #94a3b8;
+            --white: #ffffff;
+            --border: #e2e8f0;
+            --success: #4ade80;
+            --warning: #facc15;
+            --info: #60a5fa;
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+            --container-width: 1400px;
+            --radius-lg: 1rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: #f8fafc;
+            color: var(--secondary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: var(--container-width);
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Header Section */
+        .dashboard-header {
+            background: var(--white);
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left h1 {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .header-left p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-info strong {
+            display: block;
+            color: var(--secondary);
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-info p {
+            color: var(--text-light);
+            font-size: 0.85rem;
+        }
+
+        .logout-btn {
+            background: #ef4444;
+            color: var(--white);
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        /* Filters */
+        .filters-section {
+            background: var(--white);
+            padding: 2rem 1.5rem;
+            margin: 2rem 0;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .filters-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--secondary);
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            align-items: flex-end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--secondary);
+            font-size: 0.9rem;
+        }
+
+        .filter-group select,
+        .filter-group input[type="date"] {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            font-family: inherit;
+            color: var(--secondary);
+            background-color: var(--white);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .filter-group select:focus,
+        .filter-group input[type="date"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .filter-button {
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .filter-button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .clear-button {
+            background: transparent;
+            color: var(--text-body);
+            border: 1px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .clear-button:hover {
+            background: #f1f5f9;
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Metrics Grid */
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .metric-card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .metric-label {
+            color: var(--text-light);
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+        }
+
+        .metric-value {
+            color: var(--primary);
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-change {
+            color: var(--success);
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        /* Charts Grid */
+        .charts-section {
+            margin: 2rem 0;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--secondary);
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-container {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .chart-title {
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .chart-title i {
+            color: var(--primary);
+            font-size: 1.25rem;
+        }
+
+        /* Table Section */
+        .table-section {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table-header h3 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--primary-light);
+        }
+
+        th {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-body);
+            font-size: 0.9rem;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-light);
+        }
+
+        .no-data i {
+            font-size: 3rem;
+            color: var(--border);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .header-right {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .user-info {
+                text-align: center;
+            }
+
+            .filters {
+                grid-template-columns: 1fr;
+            }
+
+            .metrics {
+                grid-template-columns: 1fr;
+            }
+
+            .header-left h1 {
+                font-size: 1.5rem;
+            }
+
+            table {
+                font-size: 0.8rem;
+            }
+
+            th,
+            td {
+                padding: 0.75rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <div class="dashboard-header">
+        <div class="header-left">
+            <h1><i class="fas fa-chart-line" style="color: var(--primary);"></i> {{ title }}</h1>
+            <p>Welcome to your sales analytics dashboard</p>
+        </div>
+        <div class="header-right">
+            <div class="user-info">
+                <strong>{{ user.username }}</strong>
+                <p>{{ user.get_full_name|default:"User" }}</p>
+            </div>
+            <a href="{% url 'logout' %}" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Filters -->
+        <div class="filters-section">
+            <div class="filters-title"><i class="fas fa-sliders-h"></i> Filter Data</div>
+
+            <form method="get" class="filters">
+                {% if all_managers %}
+                <div class="filter-group">
+                    <label for="manager"><i class="fas fa-sitemap"></i> Manager</label>
+                    <select id="manager" name="manager" onchange="this.form.submit()">
+                        <option value="">-- All Managers --</option>
+                        {% for manager in all_managers %}
+                        <option value="{{ manager }}" {% if manager == selected_manager %}selected{% endif %}>{{ manager
+                            }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% endif %}
+
+                <div class="filter-group">
+                    <label for="rm"><i class="fas fa-user-tie"></i> Relationship Manager</label>
+                    <select id="rm" name="rm" onchange="this.form.submit()">
+                        <option value="">-- All RMs --</option>
+                        {% for rm in all_rms %}
+                        <option value="{{ rm }}" {% if rm == selected_rm %}selected{% endif %}>{{ rm }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="ma"><i class="fas fa-user-tag"></i> Mutual Fund Advisor</label>
+                    <select id="ma" name="ma" onchange="this.form.submit()">
+                        <option value="">-- All MAs --</option>
+                        {% for ma in all_mas %}
+                        <option value="{{ ma }}" {% if ma == selected_ma %}selected{% endif %}>{{ ma }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="date_from"><i class="far fa-calendar-alt"></i> From Date</label>
+                    <input type="date" id="date_from" name="date_from" value="{{ selected_date_from }}"
+                        onchange="this.form.submit()">
+                </div>
+
+                <div class="filter-group">
+                    <label for="date_to"><i class="far fa-calendar-alt"></i> To Date</label>
+                    <input type="date" id="date_to" name="date_to" value="{{ selected_date_to }}"
+                        onchange="this.form.submit()">
+                </div>
+
+                {% if selected_rm or selected_ma or selected_manager or selected_date_from or selected_date_to %}
+                <a href="{% url 'dashboard' %}" class="clear-button"><i class="fas fa-redo"></i> Clear Filters</a>
+                {% endif %}
+            </form>
+        </div>
+
+        <!-- Key Metrics -->
+        <section class="charts-section">
+            <h2 class="section-title"><i class="fas fa-tachometer-alt"></i> Key Metrics</h2>
+            <div class="metrics">
+                <div class="metric-card">
+                    <div class="metric-label"><i class="fas fa-handshake"></i> Total Brokerage</div>
+                    <div class="metric-value">{{ totals.combined_total_brokerage|floatformat:0 }}</div>
+                    <div class="metric-change"><i class="fas fa-arrow-up"></i> All RMs</div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Charts -->
+        <section class="charts-section">
+            <h2 class="section-title"><i class="fas fa-chart-bar"></i> Performance Analysis</h2>
+            <div class="charts-grid">
+                <!-- RM Performance Chart -->
+                <div class="chart-container">
+                    <div class="chart-title"><i class="fas fa-user-tie"></i> RM Performance - Brokerage</div>
+                    <canvas id="rmChart"></canvas>
+                </div>
+
+                <!-- Top Clients Chart -->
+                <div class="chart-container">
+                    <div class="chart-title"><i class="fas fa-users"></i> Top 10 Clients by Brokerage</div>
+                    <canvas id="topClientsChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        {% if selected_rm %}
+        <!-- RM-Specific Charts -->
+        <section class="charts-section">
+            <h2 class="section-title"><i class="fas fa-filter"></i> Analysis for {{ selected_rm }}</h2>
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <div class="chart-title"><i class="fas fa-user-tag"></i> MA Performance under {{ selected_rm }}
+                    </div>
+                    <canvas id="maChart"></canvas>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title"><i class="fas fa-pie-chart"></i> Segment Analysis</div>
+                    <canvas id="segmentChart"></canvas>
+                </div>
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Records Table -->
+        <section class="charts-section" style="margin-top: 3rem;">
+            <h2 class="section-title"><i class="fas fa-table"></i> Sales Records</h2>
+            <div class="table-section">
+                <div class="table-header">
+                    <h3>Recent Transactions</h3>
+                </div>
+                {% if records %}
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Client Name</th>
+                                <th>RM Name</th>
+                                <th>MA Name</th>
+                                <th>Total Brokerage</th>
+                                <th>Equity Cash</th>
+                                <th>Equity F&O</th>
+                                <th>Total Turnover</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in records %}
+                            <tr>
+                                <td><strong>{{ record.client_name }}</strong></td>
+                                <td>{{ record.rm_name }}</td>
+                                <td>{{ record.ma_name|default:"--" }}</td>
+                                <td><span style="color: var(--success);">INR{{ record.total_brokerage|floatformat:2 }}</span></td>
+                                <td>INR{{ record.total_equity_cash_turnover|floatformat:0 }}</td>
+                                <td>INR{{ record.total_equity_fno_turnover|floatformat:0 }}</td>
+                                <td><strong>INR{{ record.total_turnover|floatformat:0 }}</strong></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="no-data">
+                    <i class="fas fa-inbox"></i>
+                    <p>No sales records found for the selected filters.</p>
+                </div>
+                {% endif %}
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const chartDataJson = {{ chart_data_json| safe }};
+        const allMasFromServer = {{ all_mas| safe }};
+        const selectedRmFromServer = '{{ selected_rm }}';
+
+        // Chart.js default options
+        Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
+
+        // RM Performance Chart
+        if (chartDataJson.rm_performance && chartDataJson.rm_performance.labels.length > 0) {
+            const rmCtx = document.getElementById('rmChart');
+            if (rmCtx) {
+                new Chart(rmCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: chartDataJson.rm_performance.labels,
+                        datasets: [{
+                            label: 'Equity Brokerage',
+                            data: chartDataJson.rm_performance.brokerage,
+                            backgroundColor: '#2563eb',
+                            borderRadius: 8,
+                            borderSkipped: false
+                        }, {
+                            label: 'MF Brokerage',
+                            data: chartDataJson.rm_performance.mf_brokerage,
+                            backgroundColor: '#4ade80',
+                            borderRadius: 8,
+                            borderSkipped: false
+                        }, {
+                            label: 'Equity Cash',
+                            data: chartDataJson.rm_performance.equity_cash,
+                            backgroundColor: '#60a5fa',
+                            borderRadius: 8,
+                            borderSkipped: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: { position: 'bottom', padding: 20 }
+                        },
+                        scales: {
+                            y: { beginAtZero: true, ticks: { callback: function (v) { return 'INR' + (v / 100000).toFixed(1) + 'L'; } } },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Top Clients Chart
+        if (chartDataJson.top_clients && chartDataJson.top_clients.labels.length > 0) {
+            const topCtx = document.getElementById('topClientsChart');
+            if (topCtx) {
+                new Chart(topCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: chartDataJson.top_clients.labels,
+                        datasets: [{
+                            label: 'Brokerage',
+                            data: chartDataJson.top_clients.brokerage,
+                            backgroundColor: '#2563eb',
+                            borderRadius: 8,
+                            borderSkipped: false
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            x: { beginAtZero: true, ticks: { callback: function (v) { return 'INR' + (v / 100000).toFixed(1) + 'L'; } } },
+                            y: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+        }
+
+        // MA Performance Chart
+        if (chartDataJson.ma_performance && chartDataJson.ma_performance.labels.length > 0) {
+            const maCtx = document.getElementById('maChart');
+            if (maCtx) {
+                new Chart(maCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: chartDataJson.ma_performance.labels,
+                        datasets: [{
+                            data: chartDataJson.ma_performance.brokerage,
+                            backgroundColor: ['#2563eb', '#60a5fa', '#93c5fd', '#0ea5e9', '#06b6d4'],
+                            borderColor: '#ffffff',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'bottom', padding: 20 }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Segment Analysis Chart
+        if (chartDataJson.segment_analysis && chartDataJson.segment_analysis.labels.length > 0) {
+            const segCtx = document.getElementById('segmentChart');
+            if (segCtx) {
+                new Chart(segCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: chartDataJson.segment_analysis.labels,
+                        datasets: [{
+                            label: 'Equity Cash',
+                            data: chartDataJson.segment_analysis.cash,
+                            backgroundColor: '#2563eb',
+                            borderRadius: 8,
+                            borderSkipped: false
+                        }, {
+                            label: 'Equity F&O',
+                            data: chartDataJson.segment_analysis.fno,
+                            backgroundColor: '#60a5fa',
+                            borderRadius: 8,
+                            borderSkipped: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: { position: 'bottom', padding: 20 }
+                        },
+                        scales: {
+                            y: { beginAtZero: true, ticks: { callback: function (v) { return 'INR' + (v / 100000).toFixed(1) + 'L'; } } },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+
+</html>

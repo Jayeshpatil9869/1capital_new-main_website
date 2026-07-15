@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1 Capital | Mutual Fund Advisor</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --primary: #0A2E73;
+    --bg: #f5f7fb;
+    --border: #e6e9ef;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--bg);
+    margin: 0;
+    padding: 30px 16px;
+}
+
+.container {
+    max-width: 820px;
+    margin: auto;
+    background: #fff;
+    padding: 48px;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(10,46,115,0.08);
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 36px;
+}
+
+.logo {
+    max-height: 64px;
+    width: auto;
+    margin-bottom: 14px;
+}
+
+.header h1 {
+    margin: 0;
+    color: var(--primary);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+}
+
+.hidden {
+    display: none;
+}
+
+label {
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+
+input, select {
+    padding: 13px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    font-size: 14px;
+}
+
+.submit-btn {
+    margin-top: 28px;
+    width: 100%;
+    padding: 16px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+@media (max-width: 720px) {
+    .container { padding: 28px 22px; }
+    .form-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+    <!-- ⚠️ IMPORTANT: replace with YOUR hosted logo -->
+    <img class="logo" src="/assets/1capital-logo.png" alt="1 Capital">
+    <h1>Mutual Fund Recommendation</h1>
+</div>
+
+<form action="https://automation.1capital.in/webhook/mf-advisor" method="POST" id="mfForm">
+
+<div class="form-grid">
+
+<div class="field">
+<label>RM Name *</label>
+<input type="text" name="rm_name" required>
+</div>
+
+<div class="field">
+<label>Investor Name *</label>
+<input type="text" name="investor_name" required>
+</div>
+
+<div class="field">
+<label>Email *</label>
+<input type="email" name="email" required>
+</div>
+
+<div class="field">
+<label>Mobile *</label>
+<input type="text" name="mobile" required>
+</div>
+
+<div class="field">
+<label>Risk Profile *</label>
+<select name="risk_profile" required>
+<option value="">Select</option>
+<option>Conservative</option>
+<option>Moderate</option>
+<option>Aggressive</option>
+</select>
+</div>
+
+<div class="field">
+<label>Investment Type *</label>
+<select name="investment_type" id="investmentType" required>
+<option value="">Select</option>
+<option value="sip">sip</option>
+<option value="lump sum">lump sum</option>
+<option value="both">both</option>
+</select>
+</div>
+
+<!-- SIP -->
+<div class="field hidden" id="sipField">
+<label>SIP Amount *</label>
+<input type="number" name="sip_amount" id="sipInput">
+</div>
+
+<!-- LUMPSUM -->
+<div class="field hidden" id="lumpField">
+<label>Lumpsum Amount *</label>
+<input type="number" name="lumpsum_amount" id="lumpInput">
+</div>
+
+<!-- BOTH -->
+<div class="field hidden" id="bothField">
+<label>Both Amount *</label>
+<input type="number" name="both_amount" id="bothInput">
+</div>
+
+<div class="field">
+<label>Investment Horizon (Years) *</label>
+<input type="number" name="investment_horizon" required>
+</div>
+
+</div>
+
+<button class="submit-btn" type="submit">
+Generate Recommendation
+</button>
+
+</form>
+
+</div>
+
+<script>
+const typeSelect = document.getElementById('investmentType');
+const sipField = document.getElementById('sipField');
+const lumpField = document.getElementById('lumpField');
+const bothField = document.getElementById('bothField');
+
+const sipInput = document.getElementById('sipInput');
+const lumpInput = document.getElementById('lumpInput');
+const bothInput = document.getElementById('bothInput');
+
+typeSelect.addEventListener('change', () => {
+    const val = typeSelect.value;
+
+    // hide all first
+    sipField.classList.add('hidden');
+    lumpField.classList.add('hidden');
+    bothField.classList.add('hidden');
+
+    sipInput.required = false;
+    lumpInput.required = false;
+    bothInput.required = false;
+
+    if (val === 'sip') {
+        sipField.classList.remove('hidden');
+        sipInput.required = true;
+    }
+
+    if (val === 'lump sum') {
+        lumpField.classList.remove('hidden');
+        lumpInput.required = true;
+    }
+
+    if (val === 'both') {
+        sipField.classList.remove('hidden');
+        lumpField.classList.remove('hidden');
+        sipInput.required = true;
+        lumpInput.required = true;
+    }
+});
+</script>
+
+</body>
+</html>

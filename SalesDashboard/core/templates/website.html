@@ -1,0 +1,1346 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1capital.in | Premier Equity Advisory & Wealth Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* =========================================
+           CSS VARIABLES (THEME)
+           ========================================= */
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #eff6ff;
+            --secondary: #0f172a;
+            --text-body: #475569;
+            --text-light: #94a3b8;
+            --white: #ffffff;
+            --border: #e2e8f0;
+            --success: #4ade80;
+            --failure: #f97373;
+            --warning: #facc15;
+            --info: #60a5fa;
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+            --container-width: 1280px;
+            --nav-height: 80px;
+            --ticker-height: 44px;
+            --radius-xl: 1.5rem;
+            --radius-lg: 1rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: #f8fafc;
+            color: var(--secondary);
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        img,
+        canvas {
+            max-width: 100%;
+            display: block;
+        }
+
+        .container {
+            max-width: var(--container-width);
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .section {
+            padding: 6rem 0;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-muted {
+            color: var(--text-body);
+        }
+
+        .text-gradient {
+            background: linear-gradient(90deg, #000, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .grid-2 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .grid-3 {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .grid-4 {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .col-span-2 {
+                grid-column: span 2;
+            }
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.875rem;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--secondary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary);
+        }
+
+        .btn-lg {
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .btn-blue {
+            background-color: var(--primary);
+            color: var(--white);
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-blue:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 20px -3px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-outline {
+            background-color: var(--white);
+            border-color: var(--border);
+            color: var(--secondary);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary-light);
+        }
+
+        /* Ticker */
+        .ticker-wrap {
+            background-color: #000;
+            color: #fff;
+            padding: 0.6rem 0;
+            overflow: hidden;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .ticker-move {
+            display: flex;
+            width: max-content;
+            animation: ticker-scroll 30s linear infinite;
+        }
+
+        .ticker-item {
+            padding: 0 2rem;
+            font-weight: 700;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .val-up {
+            color: var(--success);
+        }
+
+        .val-neutral {
+            color: var(--warning);
+        }
+
+        .val-down {
+            color: var(--failure);
+        }
+
+        .val-blue {
+            color: var(--info);
+        }
+
+        @keyframes ticker-scroll {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        /* Navigation */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: var(--ticker-height);
+            z-index: 90;
+            height: var(--nav-height);
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+            color: var(--secondary);
+        }
+
+        .logo span {
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: none;
+            flex: 1;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .nav-links a {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-left: 2rem;
+            color: var(--text-body);
+        }
+
+
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-auth {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .nav-links {
+                display: flex;
+            }
+        }
+
+        /* Hero */
+        .hero {
+            padding-top: 3rem;
+            padding-bottom: 6rem;
+            overflow: hidden;
+        }
+
+        .hero-tag {
+            display: inline-block;
+            background-color: var(--primary-light);
+            color: var(--primary);
+            padding: 0.4rem 1rem;
+            border-radius: 99px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            line-height: 1.1;
+            font-weight: 900;
+            margin-bottom: 2rem;
+            color: var(--secondary);
+        }
+
+        .hero p {
+            font-size: 1.125rem;
+            color: var(--text-body);
+            margin-bottom: 2.5rem;
+            max-width: 32rem;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .hero-card-wrapper {
+            position: relative;
+        }
+
+        .hero-glow {
+            position: absolute;
+            inset: -1rem;
+            background: linear-gradient(to right, var(--primary), #06b6d4);
+            border-radius: 2rem;
+            opacity: 0.1;
+            filter: blur(20px);
+            z-index: 0;
+        }
+
+        .hero-card {
+            position: relative;
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+            z-index: 1;
+        }
+
+        @media (min-width: 768px) {
+            .hero h1 {
+                font-size: 4.5rem;
+            }
+        }
+
+        /* Section Titles */
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            color: var(--secondary);
+        }
+
+        .bg-white {
+            background-color: var(--white);
+        }
+
+        .bg-light {
+            background-color: #f8fafc;
+        }
+
+        /* Stat Cards */
+        .stat-card {
+            background-color: #f8fafc;
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+        }
+
+        .stat-val {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: var(--text-light);
+            text-transform: uppercase;
+        }
+
+        /* Feature Items */
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: var(--radius-lg);
+            transition: 0.3s;
+        }
+
+        .feature-item:hover {
+            background-color: var(--primary-light);
+        }
+
+        .feature-icon {
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        /* Dark Section */
+        .dark-section {
+            background-color: var(--secondary);
+            color: var(--white);
+            padding: 6rem 0;
+        }
+
+        .dark-section h2 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+        }
+
+        .dark-section p {
+            color: var(--text-light);
+            font-size: 1.125rem;
+            margin-bottom: 2rem;
+        }
+
+        .check-list li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #cbd5e1;
+            margin-bottom: 1rem;
+        }
+
+        .check-icon {
+            color: var(--success);
+        }
+
+        /* Service Grid */
+        .service-grid-item {
+            padding: 2rem;
+            border: 1px solid var(--border);
+            border-radius: 1.5rem;
+            transition: 0.3s;
+            background: var(--white);
+        }
+
+        .service-grid-item:hover {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .service-icon {
+            width: 3rem;
+            height: 3rem;
+            background-color: #f1f5f9;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            color: var(--secondary);
+            transition: 0.3s;
+            font-size: 1.5rem;
+        }
+
+        .service-grid-item:hover .service-icon {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+
+        .service-grid-item h3 {
+            color: var(--secondary);
+            margin-bottom: 0.75rem;
+            font-weight: 700;
+        }
+
+        /* =========================================
+           SECTION: CALCULATOR
+           ========================================= */
+        .calc-wrapper {
+            background-color: var(--bg-dark-surface);
+            padding: 2.5rem;
+            border-radius: 2rem;
+            border: 1px solid #334155;
+        }
+
+        .calc-input-group {
+            margin-bottom: 1rem;
+        }
+
+        .calc-input-group label {
+            display: block;
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .calc-input {
+            width: 100%;
+            background: var(--secondary);
+            border: 1px solid #475569;
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            color: var(--white);
+            outline: none;
+        }
+
+        .calc-input:focus {
+            border-color: var(--primary);
+        }
+
+        /* Forms */
+        .form-card {
+            background: var(--white);
+            padding: 3rem;
+            border-radius: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 1rem;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            outline: none;
+            font-family: inherit;
+            color: var(--secondary);
+        }
+
+        .form-textarea {
+            height: 120px;
+            resize: none;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            border-color: var(--primary);
+            background: var(--white);
+        }
+
+        @media(min-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .span-2 {
+                grid-column: span 2;
+            }
+        }
+
+        /* Testimonials */
+        .testimonial-card {
+            background: #f8fafc;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            border: 1px solid var(--border);
+            font-style: italic;
+        }
+
+        .stars {
+            color: var(--warning);
+            display: flex;
+            gap: 0.25rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: var(--secondary);
+            color: var(--white);
+            padding-top: 5rem;
+            padding-bottom: 3rem;
+            font-size: 0.875rem;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-links a {
+            color: var(--text-light);
+        }
+
+        .footer-links a:hover {
+            color: var(--white);
+        }
+
+        .social-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.5rem;
+            transition: 0.3s;
+        }
+
+        .social-icon:hover {
+            background: var(--primary);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+            font-size: 0.75rem;
+        }
+
+        /* Modal Styles */
+
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .grid-2,
+            .grid-3,
+            .grid-4 {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .span-2 {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="ticker-wrap">
+        <!-- <div class="ticker-move">
+            <div class="ticker-item">SENSEX: <span class="val-up">72,450.20 (+0.45%)</span></div>
+            <div class="ticker-item">NIFTY 50: <span class="val-up">22,010.50 (+0.38%)</span></div>
+            <div class="ticker-item">GOLD: <span class="val-neutral">INR62,450 (+0.12%)</span></div>
+            <div class="ticker-item">1CAPITAL.IN GROWTH: <span class="val-blue">Alpha Strategy (+2.1%)</span></div>
+            <div class="ticker-item">SENSEX: <span class="val-up">72,450.20 (+0.45%)</span></div>
+            <div class="ticker-item">NIFTY 50: <span class="val-up">22,010.50 (+0.38%)</span></div>
+            <div class="ticker-item">GOLD: <span class="val-neutral">INR62,450 (+0.12%)</span></div>
+        </div> -->
+        <div class="ticker-move">
+            <div class="ticker-item">
+                SENSEX:
+                <span class="ticker-sensex val-neutral">-- (--%)</span>
+            </div>
+            <div class="ticker-item">
+                NIFTY 50:
+                <span class="ticker-nifty val-neutral">-- (--%)</span>
+            </div>
+            <div class="ticker-item">
+                GOLD:
+                <span class="ticker-gold val-neutral">-- (--%)</span>
+            </div>
+            <div class="ticker-item">
+                1CAPITAL.IN GROWTH:
+                <span class="ticker-alpha val-blue">-- (--%)</span>
+            </div>
+            <div class="ticker-item">
+                SENSEX:
+                <span class="ticker-sensex val-neutral">-- (--%)</span>
+            </div>
+            <div class="ticker-item">
+                NIFTY 50:
+                <span class="ticker-nifty val-neutral">-- (--%)</span>
+            </div>
+            <div class="ticker-item">
+                GOLD:
+                <span class="ticker-gold val-neutral">-- (--%)</span>
+            </div>
+        </div>
+    </div>
+
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-chart-line"></i> One<span>Capital</span>
+            </div>
+            <div class="nav-links">
+                <a href="#home">Home</a>
+                <a href="/about-us/">About Us</a>
+                <a href="#services">Services</a>
+                <a href="/mutual-funds/">Mutual Funds</a>
+                <a href="/mf-advisor/">MF Advisor</a>
+                <a href="/pms-aif/">PMS & AIF</a>
+                <a href="#contact">Contact</a>
+            </div>
+            <div class="nav-auth">
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="container grid grid-2">
+            <div>
+                <span class="hero-tag">Expert Financial Guidance</span>
+                <h1>Optimize Your <span class="text-gradient">Wealth</span> with Precision.</h1>
+                <p>Explore Mutual Funds, Loans, and Professional Investment Advice for a secure future. Our Vision is to
+                    navigate the complexities of the equity market for you.</p>
+                <div class="hero-actions">
+                    {% if not user.is_authenticated %}
+                    <a href="{% url 'login' %}" class="btn btn-primary btn-lg">Get Started</a>
+                    <a href="/mf-advisor/" class="btn btn-blue btn-lg">MF Recommendation</a>
+                    <a href="#contact" class="btn btn-outline btn-lg">Contact Us</a>
+                    {% else %}
+                    <a href="{% url 'dashboard' %}" class="btn btn-primary btn-lg">Go to Dashboard</a>
+                    <a href="/mf-advisor/" class="btn btn-blue btn-lg">MF Recommendation</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="hero-card-wrapper">
+                <div class="hero-glow"></div>
+                <div class="hero-card">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 1.5rem;">
+                        <h3 style="font-size: 1.25rem; font-weight: 800;">Portfolio Overview</h3>
+                        <span
+                            style="background: #dcfce7; color: #166534; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700;">+12.5%</span>
+                    </div>
+                    <div
+                        style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+                        <div style="background: #f1f5f9; padding: 0.75rem; border-radius: 0.75rem;">
+                            <div style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 0.5rem;">Total Assets</div>
+                            <div style="font-size: 1.5rem; font-weight: 900; color: #0f172a;">INR25.5L</div>
+                        </div>
+                        <div style="background: #f1f5f9; padding: 0.75rem; border-radius: 0.75rem;">
+                            <div style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 0.5rem;">This Month</div>
+                            <div style="font-size: 1.5rem; font-weight: 900; color: #0f172a;">+INR2.1L</div>
+                        </div>
+                    </div>
+                    <canvas id="heroChart" height="80"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="section bg-white">
+        <div class="container grid grid-2">
+            <div>
+                <h2 class="section-title">Our Vision</h2>
+                <p class="text-muted" style="margin-bottom: 2rem;">
+                    To empower individuals with expert financial guidance and innovative investment solutions that
+                    navigate the complexities of wealth creation and preservation.
+                </p>
+                <div class="grid grid-2" style="gap: 1rem;">
+                    <div class="stat-card">
+                        <div class="stat-val">INR500+Cr</div>
+                        <div class="stat-label">Assets Under Management</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-val">5000+</div>
+                        <div class="stat-label">Happy Clients</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-val">25+</div>
+                        <div class="stat-label">Years Experience</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-val">15+</div>
+                        <div class="stat-label">Expert Team Members</div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <h2 class="section-title">Why Choose Us?</h2>
+                <div class="grid" style="gap: 1rem;">
+                    <div class="feature-item">
+                        <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+                        <div>
+                            <h4 style="margin-bottom: 0.25rem;">Secure & Regulated</h4>
+                            <p style="color: #94a3b8; font-size: 0.9rem;">SEBI Registered with complete compliance</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+                        <div>
+                            <h4 style="margin-bottom: 0.25rem;">Expert Advisors</h4>
+                            <p style="color: #94a3b8; font-size: 0.9rem;">Experienced portfolio managers</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon"><i class="fas fa-mobile-alt"></i></div>
+                        <div>
+                            <h4 style="margin-bottom: 0.25rem;">Digital First</h4>
+                            <p style="color: #94a3b8; font-size: 0.9rem;">24/7 online access to your portfolio</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon"><i class="fas fa-handshake"></i></div>
+                        <div>
+                            <h4 style="margin-bottom: 0.25rem;">Dedicated Support</h4>
+                            <p style="color: #94a3b8; font-size: 0.9rem;">Personal relationship managers</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Preview Section -->
+    <section class="dark-section">
+        <div class="container grid grid-2" style="align-items: center;">
+            <div>
+                <h2>Manage Your Wealth Anywhere.</h2>
+                <p>Access our intuitive dashboard to track your investments, monitor risk, and view real-time
+                    performance.</p>
+                <ul class="check-list">
+                    <li><i class="fas fa-check check-icon"></i> Real-time Portfolio Tracking</li>
+                    <li><i class="fas fa-check check-icon"></i> Advanced Analytics & Insights</li>
+                    <li><i class="fas fa-check check-icon"></i> Secure Data Protection</li>
+                    <li><i class="fas fa-check check-icon"></i> Mobile & Desktop Access</li>
+                </ul>
+                {% if not user.is_authenticated %}
+                <a href="https://play.google.com/store/apps/details?id=com.dwt.capital1" class="btn btn-blue"
+                    target="_blank">Try Live Demo</a>
+                {% endif %}
+            </div>
+
+            <div>
+                <div
+                    style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 1.5rem; border: 1px solid rgba(255,255,255,0.2);">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h3 style="font-size: 1.25rem; font-weight: 800;">Performance Metrics</h3>
+                        <span
+                            style="background: rgba(74, 222, 128, 0.2); color: #4ade80; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700;">+15.3%</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                        <div style="background: rgba(51, 65, 85, 0.5); padding: 0.75rem; border-radius: 0.75rem;">
+                            <div style="font-size: 0.85rem; opacity: 0.8; margin-bottom: 0.5rem;">Assets</div>
+                            <div style="font-size: 1.25rem; font-weight: 900;">INR25.5L</div>
+                        </div>
+                        <div style="background: rgba(51, 65, 85, 0.5); padding: 0.75rem; border-radius: 0.75rem;">
+                            <div style="font-size: 0.85rem; opacity: 0.8; margin-bottom: 0.5rem;">Returns</div>
+                            <div style="font-size: 1.25rem; font-weight: 900;">+15.3%</div>
+                        </div>
+                        <div style="background: rgba(51, 65, 85, 0.5); padding: 0.75rem; border-radius: 0.75rem;">
+                            <div style="font-size: 0.85rem; opacity: 0.8; margin-bottom: 0.5rem;">Invested</div>
+                            <div style="font-size: 1.25rem; font-weight: 900;">INR24.2L</div>
+                        </div>
+                    </div>
+                    <canvas id="dashboardChart" height="150"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="section bg-white">
+        <div class="container">
+            <h2 class="section-title text-center" style="margin-bottom: 4rem;">Comprehensive Services</h2>
+
+            <div class="grid grid-3">
+                <div class="service-grid-item">
+                    <div class="service-icon"><i class="fas fa-pie-chart"></i></div>
+                    <h3>Portfolio Management</h3>
+                    <p style="color: var(--text-body); font-size: 0.9rem;">Professional management of your investment
+                        portfolio with personalized strategies tailored to your financial goals.</p>
+                </div>
+                <div class="service-grid-item">
+                    <div class="service-icon"><i class="fas fa-fund"></i></div>
+                    <h3>Mutual Funds</h3>
+                    <p style="color: var(--text-body); font-size: 0.9rem;">Curated selection of mutual funds across all
+                        categories with expert recommendations and tax optimization.</p>
+                </div>
+                <div class="service-grid-item">
+                    <div class="service-icon"><i class="fas fa-landmark"></i></div>
+                    <h3>Wealth Advisory</h3>
+                    <p style="color: var(--text-body); font-size: 0.9rem;">Comprehensive financial planning including
+                        retirement planning, insurance, and succession planning.</p>
+                </div>
+                <div class="service-grid-item">
+                    <div class="service-icon"><i class="fas fa-coins"></i></div>
+                    <h3>Alternative Investments</h3>
+                    <p style="color: var(--text-body); font-size: 0.9rem;">Access to AIFs, structured products, and
+                        other alternative investment vehicles for portfolio diversification.</p>
+                </div>
+                <div class="service-grid-item">
+                    <div class="service-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                    <h3>Tax Planning</h3>
+                    <p style="color: var(--text-body); font-size: 0.9rem;">Strategic tax optimization to maximize
+                        after-tax returns and minimize your tax liability.</p>
+                </div>
+                <div class="service-grid-item">
+                    <div class="service-icon"><i class="fas fa-headset"></i></div>
+                    <h3>24/7 Support</h3>
+                    <p style="color: var(--text-body); font-size: 0.9rem;">Dedicated customer support team available
+                        round the clock to assist with your queries.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PMS & AIF Section -->
+    <section id="pms" class="section" style="background-color: var(--primary-light);">
+        <div class="container">
+            <div style="margin-bottom: 4rem;">
+                <h2 class="section-title">Premium Investment Solutions</h2>
+                <p class="text-muted">Exclusive strategies designed for high-net-worth individuals</p>
+            </div>
+
+            <div class="grid grid-2">
+                <div
+                    style="background: var(--white); padding: 2rem; border-radius: 1.5rem; border: 1px solid var(--border);">
+                    <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 1rem; color: var(--secondary);">
+                        Portfolio Management Services (PMS)</h3>
+                    <p class="text-muted" style="margin-bottom: 1.5rem;">Customized portfolio management tailored to
+                        your investment objectives and risk profile.</p>
+                    <ul style="gap: 1rem; display: flex; flex-direction: column;">
+                        <li style="display: flex; gap: 0.75rem;"><i class="fas fa-check"
+                                style="color: var(--success); margin-top: 0.25rem;"></i> Minimum Investment: INR25 Lakhs
+                        </li>
+                        <li style="display: flex; gap: 0.75rem;"><i class="fas fa-check"
+                                style="color: var(--success); margin-top: 0.25rem;"></i> Equity Focused Strategies</li>
+                        <li style="display: flex; gap: 0.75rem;"><i class="fas fa-check"
+                                style="color: var(--success); margin-top: 0.25rem;"></i> Regular Rebalancing</li>
+                        <li style="display: flex; gap: 0.75rem;"><i class="fas fa-check"
+                                style="color: var(--success); margin-top: 0.25rem;"></i> Tax Efficiency</li>
+                    </ul>
+                </div>
+
+                <div
+                    style="background: var(--white); padding: 2rem; border-radius: 1.5rem; border: 1px solid var(--border);">
+                    <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 1rem; color: var(--secondary);">
+                        Alternative Investment Funds (AIF)</h3>
+                    <p class="text-muted" style="margin-bottom: 1.5rem;">Access premium alternative investment
+                        opportunities with professional fund management.</p>
+                    <ul style="gap: 1rem; display: flex; flex-direction: column;">
+                        <li style="display: flex; gap: 0.75rem;"><i class="fas fa-check"
+                                style="color: var(--success); margin-top: 0.25rem;"></i> Minimum Investment: INR50 Lakhs
+                        </li>
+                        <li style="display: flex; gap: 0.75rem;"><i class="fas fa-check"
+                                style="color: var(--success); margin-top: 0.25rem;"></i> Multi-Strategy Funds</li>
+                        <li style="display: flex; gap: 0.75rem;"><i class="fas fa-check"
+                                style="color: var(--success); margin-top: 0.25rem;"></i> Infrastructure & Real Estate
+                        </li>
+                        <li style="display: flex; gap: 0.75rem;"><i class="fas fa-check"
+                                style="color: var(--success); margin-top: 0.25rem;"></i> Long-term Growth Focus</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="section" style="background-color: var(--primary);">
+        <div class="container">
+            <div class="form-card">
+                <h2 class="section-title" style="text-align: center; color: var(--secondary);">Get in Touch</h2>
+                <p class="text-center text-muted" style="margin-bottom: 2rem;">Our team is ready to help you achieve
+                    your financial goals</p>
+
+                <form class="form-grid" onsubmit="handleFormSubmit(event)">
+                    <input type="text" class="form-input" placeholder="Your Name" required>
+                    <input type="email" class="form-input" placeholder="Your Email" required>
+                    <input type="tel" class="form-input" placeholder="Phone Number" required>
+                    <input type="text" class="form-input" placeholder="City">
+                    <textarea class="form-textarea span-2" placeholder="Your Message" required></textarea>
+                    <button type="submit" class="btn btn-primary btn-lg" style="grid-column: span 2;">Send
+                        Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <section class="dark-section">
+        <div class="container" style="max-width: 900px;">
+            <h2 class="text-center">SIP Calculator</h2>
+            <div class="calc-wrapper">
+                <div class="grid grid-3" style="margin-bottom: 3rem;">
+                    <div class="calc-input-group">
+                        <label>Monthly SIP Amount</label>
+                        <input type="number" id="monthly" value="5000" class="calc-input">
+                    </div>
+                    <div class="calc-input-group">
+                        <label>Expected Return (%)</label>
+                        <input type="number" id="rate" value="12" class="calc-input">
+                    </div>
+                    <div class="calc-input-group">
+                        <label>Years</label>
+                        <input type="number" id="years" value="10" class="calc-input">
+                    </div>
+                </div>
+                <div class="grid grid-3 text-center">
+                    <div class="dash-stat-box">
+                        <div style="font-size: 0.75rem; color: var(--text-light);">Invested</div>
+                        <div style="font-size: 1.25rem; font-weight: 700;" id="totalInvested">INR0</div>
+                    </div>
+                    <div class="dash-stat-box">
+                        <div style="font-size: 0.75rem; color: var(--text-light);">Est. Returns</div>
+                        <div style="font-size: 1.25rem; font-weight: 700; color: var(--success);" id="estReturns">INR0
+                        </div>
+                    </div>
+                    <div style="background-color: var(--primary); padding: 0.75rem; border-radius: 0.75rem;">
+                        <div style="font-size: 0.75rem; color: #bfdbfe;">Total Value</div>
+                        <div style="font-size: 1.25rem; font-weight: 700;" id="totalVal">INR0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // SIP Calculator Logic
+        function calculateSIP() {
+            const P = parseFloat(document.getElementById('monthly').value);
+            const r = parseFloat(document.getElementById('rate').value) / 100 / 12;
+            const n = parseFloat(document.getElementById('years').value) * 12;
+
+            if (P && r && n) {
+                const fv = P * (((Math.pow(1 + r, n)) - 1) / r) * (1 + r);
+                const invested = P * n;
+
+                document.getElementById('totalInvested').innerText = "INR" + Math.round(invested).toLocaleString('en-IN');
+                document.getElementById('estReturns').innerText = "INR" + Math.round(fv - invested).toLocaleString('en-IN');
+                document.getElementById('totalVal').innerText = "INR" + Math.round(fv).toLocaleString('en-IN');
+            }
+        }
+        ['monthly', 'rate', 'years'].forEach(id => document.getElementById(id).addEventListener('input', calculateSIP));
+        calculateSIP();
+
+        // Star Rating Logic
+        function setRating(n) {
+            const stars = document.querySelectorAll('#starWidget .star-interactive');
+            document.getElementById('ratingValue').value = n;
+            stars.forEach((star, index) => {
+                if (index < n) {
+                    star.classList.add('active');
+                    star.setAttribute('fill', 'currentColor');
+                } else {
+                    star.classList.remove('active');
+                    star.setAttribute('fill', 'none');
+                }
+            });
+        }
+    </script>
+
+    <!-- Testimonials Section -->
+    <section class="section bg-white">
+        <div class="container">
+            <h2 class="section-title text-center" style="margin-bottom: 4rem;">Client Testimonials</h2>
+            <div class="grid grid-3">
+                <div class="testimonial-card">
+                    <div class="stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p>"1capital.in transformed my investment approach. Their expert guidance helped me achieve my
+                        financial goals faster than I expected."</p>
+                    <p style="margin-top: 1rem; font-weight: 700; color: var(--secondary);">- Rajesh Patel, Entrepreneur
+                    </p>
+                </div>
+                <div class="testimonial-card">
+                    <div class="stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p>"The dashboard is incredibly intuitive, and the support team is always available. I feel
+                        confident about my investments."</p>
+                    <p style="margin-top: 1rem; font-weight: 700; color: var(--secondary);">- Priya Sharma, Business
+                        Owner</p>
+                </div>
+                <div class="testimonial-card">
+                    <div class="stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p>"Professional service, transparent fees, and excellent returns. Highly recommended for anyone
+                        serious about wealth management."</p>
+                    <p style="margin-top: 1rem; font-weight: 700; color: var(--secondary);">- Amit Verma, Corporate
+                        Executive</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="footer">
+        <div class="container">
+            <div class="grid grid-4" style="border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 4rem;">
+                <div>
+                    <div class="logo"
+                        style="margin-bottom: 1.5rem; font-size: 1.5rem; font-weight: 900; letter-spacing: -1px; color: var(--white);">
+                        One<span style="color: var(--primary);">Capital</span></div>
+                    <p style="color: var(--text-light); line-height: 1.8; margin-bottom: 1.5rem;">Prominent equity
+                        advisory and brokerage firm empowering investors globally.</p>
+
+                    <style>
+                        .social-icon.whatsapp i {
+                            color: #25D366 !important;
+                        }
+                    </style>
+
+                    <div style="display: flex; gap: 0.75rem;">
+                        <a href="https://x.com/1Capital_xyz" target="_blank" class="social-icon">
+                            <i data-lucide="twitter" width="16"></i>
+                        </a>
+
+                        <a href="https://www.linkedin.com/in/1-capital-1777333b1?utm_source=share_via&utm_content=profile&utm_medium=member_android"
+                            target="_blank" class="social-icon">
+                            <i data-lucide="linkedin" width="16"></i>
+                        </a>
+
+                        <a href="https://www.instagram.com/1_capital_?igsh=MTE0cWllNmwyZjM2Ng==" target="_blank"
+                            class="social-icon">
+                            <i data-lucide="instagram" width="16"></i>
+                        </a>
+
+                        <a href="https://www.facebook.com/people/1Capital/61564197167565/" target="_blank"
+                            class="social-icon">
+                            <i data-lucide="facebook" width="16"></i>
+                        </a>
+
+                        <a href="https://wa.me/918484895622?text=Hello%20One%20Capital,%20I%20want%20investment%20guidance."
+                            target="_blank" class="social-icon whatsapp">
+                            <i data-lucide="message-circle" width="16"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h4 style="margin-bottom: 1.5rem;">Services</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Portfolio Management</a></li>
+                        <li><a href="#">Mutual Funds</a></li>
+                        <li><a href="#">Wealth Advisory</a></li>
+                        <li><a href="#">Tax Planning</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="margin-bottom: 1.5rem;">Legal</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms & Conditions</a></li>
+                        <li><a href="#">Disclaimer</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="margin-bottom: 1.5rem;">Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="{% url 'dashboard' %}" target="_blank">Business Dashboard</a></li>
+                        <li><a href="/about-us/">About Us</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="/upload-portal/login/" style="font-weight: 600; color: var(--primary);">Data Upload
+                                Portal</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 1capital.in. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+
+
+    <script>
+        lucide.createIcons();
+
+        // Chart for hero
+        const ctxHero = document.getElementById('heroChart').getContext('2d');
+        new Chart(ctxHero, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Portfolio Value',
+                    data: [23, 23.5, 24, 24.5, 25, 25.5],
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#2563eb'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { display: false }, x: { grid: { display: false } } }
+            }
+        });
+
+        // Chart for dashboard preview
+        const ctxDash = document.getElementById('dashboardChart').getContext('2d');
+        new Chart(ctxDash, {
+            type: 'bar',
+            data: {
+                labels: ['Equity', 'MF', 'Bonds', 'Cash'],
+                datasets: [{
+                    label: 'Allocation',
+                    data: [45, 30, 15, 10],
+                    backgroundColor: ['#2563eb', '#60a5fa', '#93c5fd', '#dbeafe'],
+                    borderRadius: 8,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                indexAxis: 'x',
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true, display: false }, x: { grid: { display: false } } }
+            }
+        });
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            alert('Thank you for reaching out! We will contact you shortly.');
+            event.target.reset();
+        }
+    </script>
+
+    <script>
+        async function loadTickerData() {
+            try {
+                const res = await fetch("/api/market-ticker/");
+                if (!res.ok) throw new Error("HTTP " + res.status);
+                const payload = await res.json();
+                if (payload.error || !payload.data) {
+                    console.error("Ticker API error:", payload.error);
+                    return;
+                }
+                const data = payload.data;
+
+                // function updateElement(id, item) {
+                //     const el = document.getElementById(id);
+                //     if (!el || !item) return;
+
+                //     const val = Number(item.value);
+                //     const change = Number(item.change);
+
+                //     const formattedVal = isNaN(val)
+                //         ? "--"
+                //         : val.toLocaleString("en-IN", { maximumFractionDigits: 2 });
+                //     const formattedChange = isNaN(change)
+                //         ? "--"
+                //         : change.toFixed(2);
+
+                //     el.textContent = `${formattedVal} (${formattedChange}%)`;
+
+                //     el.classList.remove("val-up", "val-down", "val-neutral");
+                //     if (!isNaN(change)) {
+                //         if (change > 0) el.classList.add("val-up");
+                //         else if (change < 0) el.classList.add("val-down");
+                //         else el.classList.add("val-neutral");
+                //     } else {
+                //         el.classList.add("val-neutral");
+                //     }
+                // }
+
+                function updateElements(selector, item) {
+                    const elements = document.querySelectorAll(selector);
+                    if (!elements.length || !item) return;
+
+                    const val = Number(item.value);
+                    const change = Number(item.change);
+
+                    const formattedVal = isNaN(val)
+                        ? "--"
+                        : val.toLocaleString("en-IN", { maximumFractionDigits: 2 });
+                    const formattedChange = isNaN(change)
+                        ? "--"
+                        : change.toFixed(2);
+
+                    elements.forEach(el => {
+                        el.textContent = `${formattedVal} (${formattedChange}%)`;
+
+                        el.classList.remove("val-up", "val-down", "val-neutral");
+                        if (!isNaN(change)) {
+                            if (change > 0) el.classList.add("val-up");
+                            else if (change < 0) el.classList.add("val-down");
+                            else el.classList.add("val-neutral");
+                        } else {
+                            el.classList.add("val-neutral");
+                        }
+                    });
+                }
+
+                // updateElement("ticker-sensex", data.sensex);
+                // updateElement("ticker-nifty", data.nifty50);
+                // updateElement("ticker-gold", data.gold);
+                // updateElement("ticker-alpha", data.alpha_strategy);
+                updateElements(".ticker-sensex", data.sensex);
+                updateElements(".ticker-nifty", data.nifty50);
+                updateElements(".ticker-gold", data.gold);
+                updateElements(".ticker-alpha", data.alpha_strategy);
+            } catch (err) {
+                console.error("Failed to load ticker data:", err);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            loadTickerData();
+            setInterval(loadTickerData, 3 * 60 * 60 * 1000); // refresh every 60s
+        });
+    </script>
+
+</body>
+
+</html>

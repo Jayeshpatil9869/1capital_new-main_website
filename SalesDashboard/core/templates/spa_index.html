@@ -1,0 +1,25 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sales Dashboard App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    {% comment %}
+      The built React app (Vite) will be collected into static files.
+      We reference the main entry by its default name from Vite (`index.html` + assets)
+      and rely on Django's staticfiles manifest in production if enabled.
+    {% endcomment %}
+    <link rel="stylesheet" href="{% static 'assets/index.css' %}">
+  </head>
+  <body class="bg-slate-50">
+    <div id="root"></div>
+    <script type="module" src="{% static 'assets/index.js' %}"></script>
+  </body>
+</html>
+
