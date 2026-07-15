@@ -1,31 +1,62 @@
-# 1capital
-# setuprepo1cap
+# One Capital Website (Standalone React + Vite + TypeScript)
 
-This repository contains a Django backend and a Vite+React frontend located in the `frontend/` folder. The React app is configured to work with the Django API and can be served by Django in production.
+This repository contains the standalone, premium website for **One Capital**, built using React, Vite, Tailwind CSS, GSAP, and Locomotive Scroll. All Sales Dashboard and Django backend code has been removed.
 
-Quick start (development):
+---
 
-1. Start the Django backend
-   - python -m venv .venv
-   - source .venv/bin/activate
-   - pip install -r requirements.txt
-   - python manage.py migrate
-   - python manage.py createsuperuser (optional)
-   - python manage.py runserver
+## 🚀 How to Run the Website Locally
 
-2. Start the React frontend (dev server with proxy to Django):
-   - cd frontend
-   - npm install
-   - npm run dev
-   - Open http://localhost:5173 (requests to /api/* will be proxied to http://127.0.0.1:8000)
+### Prerequisites
+Make sure you have [Node.js](https://nodejs.org/) installed (version 18+ is recommended).
 
-Production build and serve via Django:
+### Step 1: Install Dependencies
+Open your terminal in the project's root directory and run:
+```bash
+npm install
+```
 
-- cd frontend && npm run build
-- python manage.py collectstatic --noinput
-- python manage.py runserver 0.0.0.0:8000
-- Visit http://127.0.0.1:8000/app/ to open the SPA served by Django
+### Step 2: Start Development Server
+Run the following command to start the local Vite development server:
+```bash
+npm run dev
+```
 
-Notes:
-- The frontend build step includes a postbuild script that copies the generated main JS/CSS into `dist/assets/index.js` and `dist/assets/index.css` so the Django template `core/templates/spa_index.html` can reference them via `{% static 'assets/index.js' %}`.
-- Existing Django template routes (e.g., `/mutual-funds/`, `/pms-aif/`) still work. The React app provides equivalent routes under `/app/` (e.g., `/app/mf`, `/app/pms`) during migration.
+### Step 3: Open in Browser
+Once started, Vite will display the local URL. Open your browser and navigate to:
+👉 **[http://localhost:5173/](http://localhost:5173/)**
+
+---
+
+## 📦 How to Build for Production
+
+### Step 1: Compile the Project
+To compile the site into optimized static assets (HTML, CSS, JS), run:
+```bash
+npm run build
+```
+This will compile the website and save the output inside the `dist/` directory.
+
+### Step 2: Preview the Build (Optional)
+To test the production build locally before deploying, run:
+```bash
+npm run preview
+```
+Open the provided URL (usually `http://localhost:4173/`) to inspect the compiled version.
+
+### Step 3: Deployment
+To deploy, simply upload the contents of the `dist/` folder to any static web hosting provider, such as:
+- Cloudflare Pages
+- Netlify
+- Vercel
+- AWS S3 / Cloudfront
+- Github Pages
+
+---
+
+## 📁 Key File Locations
+
+- **Main Navigation/App Routes:** `src/App.tsx`
+- **Homepage:** `src/pages/AlternateWebsite.tsx`
+- **Mutual Funds Page:** `src/pages/MutualFundsPage.tsx`
+- **PMS & AIF Page:** `src/pages/PmsAifPage.tsx`
+- **Styles & Dark/Light Theme definitions:** `src/pages/website/AlternateWebsiteStyle.ts`
