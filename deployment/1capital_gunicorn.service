@@ -5,10 +5,10 @@ After=network.target
 [Service]
 User=root
 Group=www-data
-WorkingDirectory=/root/SalesDashboard/SalesDashboard
-ExecStart=/root/SalesDashboard/SalesDashboard/venv/bin/gunicorn \
-          --access-logfile /root/SalesDashboard/SalesDashboard/logs/gunicorn-access.log \
-          --error-logfile /root/SalesDashboard/SalesDashboard/logs/gunicorn-error.log \
+WorkingDirectory=/root/OneCWebsite/1capital_new-main_website/SalesDashboard
+ExecStart=/root/OneCWebsite/1capital_new-main_website/venv/bin/gunicorn \
+          --access-logfile /root/OneCWebsite/1capital_new-main_website/SalesDashboard/logs/gunicorn-access.log \
+          --error-logfile /root/OneCWebsite/1capital_new-main_website/SalesDashboard/logs/gunicorn-error.log \
           --workers 3 \
           --bind 127.0.0.1:8000 \
           SalesDashboard.wsgi:application
