@@ -67,47 +67,61 @@ You can link this GitHub repository directly to any of the following providers f
 - **Netlify:** Set Build Command to `npm run build` and Publish Directory to `dist`.
 
 #### Option B: Self-Hosted Web Server (Nginx)
-If you want to host it on your own VPS using Nginx, copy the compiled `dist/` directory to your server (e.g., `/var/www/1capital/`) and use the following server block config. 
 
-> [!IMPORTANT]
-> Because this is a React SPA using client-side routing, Nginx must be configured to redirect all unmatched requests back to `index.html` via `try_files` so that users can refresh pages (like `/mutual-funds`) without getting a 404 error.
+We have created a production-ready Nginx configuration file at [deployment/nginx/1capital.in.conf](file:///c:/Users/Asus/Pictures/All%20Programs/Internship%201Capital/1capital_new-main_website/deployment/nginx/1capital.in.conf) that is optimized for hosting the standalone React SPA behind Cloudflare proxy (`72.61.141.247`).
 
-Use this custom Nginx configuration block:
+Follow these step-by-step instructions to deploy it on your VPS:
 
-```nginx
-server {
-    listen 80;
-    server_name 1capital.in www.1capital.in;
-
-    # Redirect www to non-www
-    if ($host = "www.1capital.in") {
-        return 301 https://1capital.in$request_uri;
-    }
-
-    # Set root directory to the compiled dist folder
-    root /var/www/1capital/dist;
-    index index.html;
-
-    # Enable gzip compression
-    gzip on;
-    gzip_types text/plain text/css application/json application/javascript text/xml;
-
-    # Handle SPA routing (Critical for React Router)
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
-
-    # Cache static assets aggressively
-    location /assets/ {
-        expires 30d;
-        add_header Cache-Control "public, no-transform";
-        access_log off;
-    }
-
-    # Security Headers
-    add_header X-Frame-Options "DENY" always;
-    add_header X-Content-Type-Options "nosniff" always;
-    add_header X-XSS-Protection "1; mode=block" always;
-    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
-}
+##### Step 1: Copy the Build Folder to the Server
+Upload the compiled `dist/` folder from your local machine to `/var/www/1capital/dist` on your server:
+```bash
+# Example using rsync (run from local project root)
+rsync -avz --delete dist/ user@72.61.141.247:/var/www/1capital/dist/
 ```
+Ensure directory permissions are correct so that the Nginx user (`www-data`) can read it:
+```bash
+sudo chown -R www-data:www-data /var/www/1capital
+sudo chmod -R 755 /var/www/1capital
+```
+
+##### Step 2: Copy and Enable the Nginx Configuration
+1. Copy the Nginx configuration file to the Nginx configurations directory:
+   ```bash
+   sudo cp deployment/nginx/1capital.in.conf /etc/nginx/sites-available/1capital.in.conf
+   ```
+2. Enable the configuration by creating a symbolic link in the `sites-enabled` directory:
+   ```bash
+   sudo ln -s /etc/nginx/sites-available/1capital.in.conf /etc/nginx/sites-enabled/
+   ```
+3. Remove the `default` configuration if you aren't using it:
+   ```bash
+   sudo rm /etc/nginx/sites-enabled/default
+   ```
+
+##### Step 3: Obtain SSL Certificates (For Cloudflare Full/Full strict SSL)
+To support `https://1capital.in/` using **Full** or **Full (strict)** SSL on Cloudflare (highly recommended), generate Let's Encrypt certificates using Certbot:
+```bash
+# Install Certbot and the Nginx plugin
+sudo apt update
+sudo apt install certbot python3-certbot-nginx
+
+# Obtain and configure the SSL certificate
+sudo certbot --nginx -d 1capital.in -d www.1capital.in
+```
+*Note: Certbot will automatically verify ownership, create the certificates, and link them to the Nginx server block.*
+
+##### Step 4: Validate and Reload Nginx
+1. Verify the Nginx configuration syntax is valid:
+   ```bash
+   sudo nginx -t
+   ```
+   *Expected Output: `syntax is ok` and `test is successful`*
+2. Reload Nginx to apply the configuration:
+   ```bash
+   sudo systemctl reload nginx
+   ```
+
+##### Step 5: Toggling Cloudflare SSL Modes
+- **Full / Full (strict) (Recommended):** Use the default configuration. Cloudflare encrypts traffic to the edge, and Nginx encrypts traffic from Cloudflare to your VPS using the certificates set in the HTTPS server block.
+- **Flexible SSL:** If you choose Flexible SSL, Cloudflare terminates SSL and requests pages from your VPS via HTTP (port 80). In this case, edit `/etc/nginx/sites-available/1capital.in.conf`, comment out the SSL server blocks (Sections 3 and 4), and uncomment the **ALTERNATIVE SETUP** block at the bottom of the file. Then, reload Nginx.
+
